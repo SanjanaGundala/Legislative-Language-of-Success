@@ -1,5 +1,6 @@
 import pandas as pd 
 import spacy 
+import numpy as np
 nlp = spacy.load("en_core_web_sm")
 
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
@@ -31,6 +32,7 @@ def filter_data(dataset):
 def gen_input_tfidf(dataset): 
     all_texts = dataset[["Text", "PersonType", "Alignment", 'Ayes','Naes','Abstains']]
     all_texts = all_texts.drop_duplicates()
+    df = pd.DataFrame()
     speeches = all_texts['Text'].tolist()
     outcome_list = []
     for index, row in all_texts.iterrows():
@@ -41,6 +43,13 @@ def gen_input_tfidf(dataset):
         if (ayes > naes and ("For" in alignment or alignment == "Indeterminate" or alignment == "Neutral")) or (ayes < naes and ("Against" in alignment or alignment == "Indeterminate" or alignment == "Neutral")):
             outcome = 1
         outcome_list.append(outcome)    
+    df['text'] = speeches
+    df['outcome'] = outcome_list
+    to_remove = np.random.choice(df[df['outcome']==1].index,size=5660,replace=False)
+    df = df.drop(to_remove) 
+    speeches = df['text']
+    outcome_list = df['outcome']
+    print(len(speeches))
     return speeches, outcome_list
 
 def TF_IDF_classifier(dataset): 
@@ -75,6 +84,7 @@ def TF_IDF_classifier(dataset):
 def main(): 
     dataset = readFile("CA20172018_alignments.tsv")
     filtered_dataset = filter_data(dataset)
+    
     TF_IDF_classifier(filtered_dataset)
     
 if __name__ == "__main__":

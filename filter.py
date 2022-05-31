@@ -3,6 +3,7 @@ import pandas as pd
 def readFile(csv_name):
     df = pd.read_csv(csv_name, sep='\t')
     df.columns =['FirstName', 'LastName', 'PID', 'PersonType', 'Organization', 'BID', 'DID', 'Speech Type', 'Alignment','Date','VID','Ayes','Naes','Abstains','MID','motionText','doPass','Text']
+    print(df)
     df = df.drop_duplicates()
     return df 
 
@@ -25,9 +26,9 @@ def check_alignments(dataset):
     df.to_csv('alignment_check.csv', index=False)
 
 def main(): 
-    dataset = readFile("CA20172018_alignments_10k.tsv")
+    dataset = readFile("CA20172018_alignments.tsv")
     filtered_dataset = filter_data(dataset)
-    check_alignments(filtered_dataset)
+    #check_alignments(filtered_dataset)
     
     
 if __name__ == "__main__":

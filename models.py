@@ -16,7 +16,7 @@ from keras.layers import Dense
 from tensorflow.keras.optimizers import Adam , SGD
 
 def gen_training_data(data): 
-    sample_text = data['text'][4]
+    #sample_text = data['text'][4]
     label = data[["outcome"]]
     dataset = data.drop(['text', 'outcome'],  axis=1)
 
@@ -86,17 +86,20 @@ def FCNN(dataset):
     print('Recall: %.6f' %recall)
 
 
-def main(): 
+def main():
     final_dataset = pd.read_csv ('features.csv')
-    #print("Naive Bayes: ")
-    #naive_bayes(final_dataset)
-    #print()
-    #print("SVM: ")
-    #svm(final_dataset)
-    #print()
+    to_remove = np.random.choice(final_dataset[final_dataset['outcome']==1].index,size=5660,replace=False)
+    final_dataset = final_dataset.drop(to_remove) 
+    
+    print("Naive Bayes: ")
+    naive_bayes(final_dataset)
+    print()
+    print("SVM: ")
+    svm(final_dataset)
+    print()
     print("FCNN: ")
     FCNN(final_dataset)
-    #print()
+    print()
 
 if __name__ == "__main__":
    main()

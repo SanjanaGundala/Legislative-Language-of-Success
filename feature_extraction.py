@@ -79,7 +79,7 @@ def generate_successful_phrases(dataset, num):
         naes = row['Naes']
         alignment = str(row['Alignment'])
 
-        NGRAMS = generate_POS_ngrams(text, num)
+        NGRAMS = generate_ngrams_with_NER(text, num)
         all_ngrams = all_ngrams + NGRAMS
         
         for entry in NGRAMS: 
@@ -122,6 +122,7 @@ def generate_successful_phrases(dataset, num):
     neg_success_rate = {}
     for ngram in ngrams_dict.keys(): 
         if ngram in for_bill_pass: 
+            print(for_bill_pass[ngram])
             pos_success_rate[ngram] = for_bill_pass[ngram]/alignment_for[ngram]
         else: 
             pos_success_rate[ngram] = 0
@@ -138,16 +139,24 @@ def generate_successful_phrases(dataset, num):
 
     print(pos_success_rate)
     print(neg_success_rate)
-    '''
-    with open('pos_successfulphrases5.csv', 'w') as f:
+    
+    filename_pos  = 'pos_successfulphrases'+ str(num)+'.csv'
+    filename_neg  = 'neg_successfulphrases'+ str(num)+'.csv'
+    with open(filename_pos, 'w') as f:
         writer = csv.writer(f)
         for row in pos_success_rate.items():
-            writer.writerow(row)
-    with open('neg_successfulphrases5.csv', 'w') as f:
+            new_row = list(row)
+            new_row.append(for_bill_pass[ngram])
+            new_row.append(alignment_for[ngram])
+            writer.writerow(new_row)
+    with open(filename_neg, 'w') as f:
         writer = csv.writer(f)
         for row in neg_success_rate.items():
-            writer.writerow(row)
-    '''
+            new_row = list(row) 
+            new_row.append(against_bill_fail[ngram])
+            new_row.append(alignment_against[ngram])
+            writer.writerow(new_row)
+    
     pos_successful_phrases = pos_success_rate.keys()
     neg_successful_phrases = neg_success_rate.keys()
     return pos_successful_phrases, neg_successful_phrases
@@ -346,9 +355,9 @@ def main():
     dataset = readFile("CA20172018_alignments.tsv")
     filtered_dataset = filter_data(dataset)
     print(filtered_dataset)
-    pos_successful_trigrams, neg_successful_trigrams = generate_successful_phrases(filtered_dataset, 3)
+    #pos_successful_trigrams, neg_successful_trigrams = generate_successful_phrases(filtered_dataset, 3)
     #pos_successful_quadgrams, neg_successful_quadgrams = generate_successful_phrases(filtered_dataset, 4)
-    #pos_successful_pentagrams, neg_successful_pentagrams = generate_successful_phrases(filtered_dataset, 5)
+    pos_successful_pentagrams, neg_successful_pentagrams = generate_successful_phrases(filtered_dataset, 5)
     #features = extract_features(filtered_dataset,pos_successful_trigrams,neg_successful_trigrams, pos_successful_quadgrams, neg_successful_quadgrams, pos_successful_pentagrams, neg_successful_pentagrams)
     #print(features)
     #features.to_csv('features.csv', index=False)    
